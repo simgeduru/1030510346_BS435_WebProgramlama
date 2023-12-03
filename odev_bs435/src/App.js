@@ -6,7 +6,9 @@ function App() {
     //ahbefejkbk
 }
 
-function Benim_Fonks() {
+export function Benim_Fonks() {
 
 }
 export default App;
+
+
