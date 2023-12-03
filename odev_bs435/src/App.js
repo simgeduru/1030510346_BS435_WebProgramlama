@@ -7,7 +7,6 @@ function App() {
 }
 
 function Benim_Fonks() {
-//shebfk
-    //ahbefejkbk
+
 }
 export default App;
