@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {OyunModlari} from "./tahminolustur";
-
-
+import {OyunModlari, rastgeleSayiUret} from "./tahminolustur";
 
 export const SayiTahminOyunu = () => {
     const [hedefSayi, setHedefSayi] = useState(0);
@@ -9,49 +7,76 @@ export const SayiTahminOyunu = () => {
     const [tahminSayisi, setTahminSayisi] = useState(0);
     const [oyunModu, setOyunModu] = useState(OyunModlari.KOLAY);
     const [oyunBitti, setOyunBitti] = useState(false);
+    const [bildiri, setBildiri] = useState('');
+    const [hakSayisi, setHakSayisi] = useState(3);
 
     useEffect(() => {
         oyunuSifirla();
     }, [oyunModu]);
 
     const oyunuSifirla = () => {
-        const min = oyunModu === OyunModlari.KOLAY ? 1 : 1;
-        const max = oyunModu === OyunModlari.KOLAY ? 10 : 100;
+        const min = 1;
+        const max = 100;
         const yeniHedefSayi = rastgeleSayiUret(min, max);
         setHedefSayi(yeniHedefSayi);
         setKullaniciTahmini('');
         setTahminSayisi(0);
         setOyunBitti(false);
+        setBildiri('');
+        setHakSayisi(oyunModu === OyunModlari.ZOR ? 3 : 7);
     };
 
     const inputDegisti = (event) => {
-        setKullaniciTahmini(event.target.value);
+        const girilenSayi = parseInt(event.target.value, 10);
+
+        if (isNaN(girilenSayi) || girilenSayi < 1 || girilenSayi > 100) {
+            setBildiri('Lütfen 1 ile 100 arasında bir sayı girin.');
+        } else {
+            setBildiri('');
+        }
+
+        setKullaniciTahmini(girilenSayi.toString());
     };
 
     const tahminKontrol = () => {
         const tahmin = parseInt(kullaniciTahmini, 10);
 
-        if (isNaN(tahmin)) {
-            alert('Lütfen geçerli bir sayı girin.');
+        if (isNaN(tahmin) || tahmin < 1 || tahmin > 100) {
+            setBildiri('Lütfen 1 ile 100 arasında bir sayı girin.');
             return;
         }
 
         setTahminSayisi(tahminSayisi + 1);
 
         if (tahmin === hedefSayi) {
-            alert(`Tebrikler! ${tahminSayisi} denemede doğru sayıyı buldunuz.`);
+            setBildiri(`Tebrikler! ${tahminSayisi} denemede doğru sayıyı buldunuz.`);
             setOyunBitti(true);
         } else {
-            alert('Yanlış tahmin. Tekrar deneyin.');
+
+            const uzaklik = Math.abs(hedefSayi - tahmin);
+            let mesaj = '';
+            if (uzaklik <= 3) {
+                mesaj = 'Çok yaklaştınız!';
+            } else {
+                mesaj = 'Uzak kaldınız, biraz daha deneyin.';
+            }
+
+            setBildiri(mesaj);
+            if (tahminSayisi >= hakSayisi) {
+                setBildiri(`Üzgünüz! ${hakSayisi} hakkınız bitti.`);
+                setOyunBitti(true);
+            }
         }
     };
 
     const zorModaGec = () => {
         setOyunModu(OyunModlari.ZOR);
+        oyunuSifirla();
     };
 
     const kolayModaGec = () => {
         setOyunModu(OyunModlari.KOLAY);
+        oyunuSifirla();
     };
 
     return (
@@ -73,15 +98,11 @@ export const SayiTahminOyunu = () => {
             <button onClick={zorModaGec} disabled={oyunBitti}>
                 ZOR Moduna Geç
             </button>
-            <button onClick={kolayModaGec} disabled={oyunBitti}>
-                KOLAY Moduna Geç
-            </button>
             <div>
                 <h2>Oyun Modu: {oyunModu}</h2>
-                <p>Hedef Sayı: {hedefSayi}</p>
                 <p>Deneme Sayısı: {tahminSayisi}</p>
+                <p>{bildiri}</p>
             </div>
         </div>
     );
 };
-

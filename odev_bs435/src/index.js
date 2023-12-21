@@ -1,8 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import {BrowserRouter, createBrowserRouter, createHashRouter, RouterProvider} from "react-router-dom";
-import {Home} from "./home";
-import {SayiTahminOyunu} from "./oyunuret";
+import {Home} from "./game/home";
+import {SayiTahminOyunu} from "./game/oyunuret";
+
 
 
 
